@@ -1,88 +1,93 @@
-# Eureka Server & Microservices
+# Eureka Server and Microservices Registration
 
-## 1. Project Description
+Microservices project using **Netflix Eureka** for service discovery. A Spring Boot Eureka Server registers four microservices written in different technologies.
 
-This project demonstrates the implementation of a microservices architecture using **Netflix Eureka Server** for service registration and discovery.
+## 1. Architecture
 
-The objective is to register multiple microservices as Eureka clients and manage their instances through a centralized Eureka dashboard.
+| Service      | Technology  | Port(s)      | Eureka name  |
+|--------------|-------------|--------------|--------------|
+| Eureka Server| Spring Boot | 8761         | -            |
+| CANDIDAT     | Spring Boot | 8085         | CANDIDAT     |
+| JOB          | Spring Boot | <port>       | JOB          |
+| MEETING      | Node.js     | 8083, 8086   | MEETING      |
+| NOTIFICATION | Python      | 8084, 8087   | NOTIFICATION |
 
-## 2. Project Architecture
+## 2. Project Structure
 
-The architecture consists of one Eureka Server and four microservices.
-
-| Component | Technology | Port(s) | Role |
-|---|---|---|---|
-| Eureka Server | Spring Boot / Netflix Eureka | 8761 | Service registration and discovery |
-| CANDIDAT | Spring Boot | 8081 | Candidate management |
-| JOB | Spring Boot | 8082 | Job management |
-| MEETING | Node.js | 8083, 8086 | Meeting management |
-| NOTIFICATION | Python / FastAPI | 8084, 8087 | Notification management |
-
-## 3. Eureka Dashboard
-
-The Eureka dashboard provides an overview of all registered microservices and their running instances.
-
-All four services (CANDIDAT, JOB, MEETING and NOTIFICATION) are expected to be registered and visible simultaneously.
-
-### Dashboard Screenshot
-
-![Eureka Dashboard](microservices/screenshots/eureka-dashboard.png)
-## 4. Multiple Instances
-
-To demonstrate service scalability and availability, multiple instances are configured:
-
-- MEETING: ports 8083 and 8086.
-- NOTIFICATION: ports 8084 and 8087.
-
-Each instance registers independently with the Eureka Server.
-
-## 5. Technologies Used
-
-- Java
-- Spring Boot
-- Netflix Eureka Server
-- Node.js
-- Python
-- FastAPI
-- MySQL
-- Git
-- GitHub
-
-## 6. Project Structure
-
-```text
+```
 backend/
-│
-├── eureka-server/
-│
+├── README.md
 └── microservices/
+    ├── eureka-server/
     ├── candidat/
     ├── job/
     ├── meeting/
-    └── notification/
-    
-screenshots/
-└── eureka-dashboard.png
-
-README.md
+    ├── notification/
+    └── screenshots/
+        └── eureka-dashboard.png
 ```
 
-*Note: Adapt the folder names above if they differ from your actual project structure.*
+## 3. Eureka Server
 
-## 8. How to Run the Project
+The server is a Spring Boot application annotated with `@EnableEurekaServer`.
 
-1. Start the Eureka Server on port 8761.
-2. Start the CANDIDAT microservice on port 8081.
-3. Start the JOB microservice on port 8082.
-4. Start two MEETING instances on ports 8083 and 8086.
-5. Start two NOTIFICATION instances on ports 8084 and 8087.
-6. Open the Eureka dashboard:
+```properties
+server.port=8761
+eureka.client.register-with-eureka=false
+eureka.client.fetch-registry=false
+```
 
-   http://localhost:8761
+Start it first, then open the dashboard: http://localhost:8761
 
-7. Verify that all four microservices and their instances are registered.
+## 4. Eureka Clients
 
-## 9. GitHub Repository
+### CANDIDAT and JOB (Spring Boot)
 
-Repository: [Insert your GitHub repository URL]
+```properties
+spring.application.name=candidat
+server.port=8085
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
+```
 
+### MEETING (Node.js)
+
+Uses the `eureka-js-client` library.
+
+```bash
+cd microservices/meeting
+npm install
+node app.js
+```
+
+### NOTIFICATION (Python)
+
+Uses the `py_eureka_client` library.
+
+```bash
+cd microservices/notification
+pip install -r requirements.txt
+python app.py
+```
+
+## 5. Multiple Instances
+
+To demonstrate scalability and availability, multiple instances are configured:
+
+- MEETING: ports 8083 and 8086
+- NOTIFICATION: ports 8084 and 8087
+
+Each instance registers independently with the Eureka Server.
+
+## 6. Dashboard Screenshot
+
+All four services (CANDIDAT, JOB, MEETING and NOTIFICATION) are registered and visible simultaneously, with multiple instances for MEETING and NOTIFICATION.
+
+![Eureka Dashboard](microservices/screenshots/eureka-dashboard.png)
+
+## 7. How to Run
+
+1. Start the Eureka Server (port 8761).
+2. Start CANDIDAT and JOB.
+3. Start MEETING on ports 8083 and 8086.
+4. Start NOTIFICATION on ports 8084 and 8087.
+5. Open http://localhost:8761 and check that all services are **UP**.
