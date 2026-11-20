@@ -26,8 +26,7 @@ All four services (CANDIDAT, JOB, MEETING and NOTIFICATION) are expected to be r
 
 ### Dashboard Screenshot
 
-![Eureka Dashboard](screenshots/eureka-dashboard.png)
-
+![Eureka Dashboard](microservices/screenshots/eureka-dashboard.png)
 ## 4. Multiple Instances
 
 To demonstrate service scalability and availability, multiple instances are configured:
